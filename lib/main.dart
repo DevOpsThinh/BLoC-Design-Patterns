@@ -8,6 +8,7 @@
 ///                    Import Library                             ///
 ///--------------------------------------------------------------///
 
+import 'package:counter_app/fancy_button.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Learning Flutter',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -32,7 +33,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
 
         //primarySwatch: Colors.blue,
-        primarySwatch: Colors.indigo,
+        primarySwatch: Colors.green,
       ),
       home: MyHomePage(title: "Thinh's Home Page"),
     );
@@ -59,6 +60,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final List<Color> colors = [
+    Colors.amberAccent,
+    Colors.cyan,
+    Colors.deepOrangeAccent
+  ];
+  bool _reversed = false;
+  List<UniqueKey> _buttonKeys = [UniqueKey(), UniqueKey()];
+
+  ///----------------------------------------------------------------///
+  ///                    setState() methods                         ///
+  ///--------------------------------------------------------------///
 
   void _incrementCounter() {
     setState(() {
@@ -77,10 +89,55 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _resetCounter() {
     setState(() => _counter = 0);
+
+    /// Turns around and calls (invoke) _swap() method
+    /// which will swap the button's locations.
+    _swap();
   }
+
+  /// private swap() method
+  /// This method updates the _reversed Boolean and call setState()
+  /// which triggers a rebuild!
+  void _swap() {
+    setState(() {
+      _reversed = !_reversed;
+    });
+  }
+
+  ///----------------------------------------------------------------///
+  ///                    Build Context                              ///
+  ///--------------------------------------------------------------///
 
   @override
   Widget build(BuildContext context) {
+    // FancyButton: increments counter by one unit
+    final incrementButton = FancyButton(
+      key: _buttonKeys.first,
+      child: Text(
+        "Increment",
+        style: TextStyle(color: Colors.white),
+      ),
+      onPressed: _incrementCounter,
+    );
+    //FancyButton: decrements counter by one unit
+    final decrementButton = FancyButton(
+      key: _buttonKeys.last,
+      child: Text(
+        "Decrement",
+        style: TextStyle(color: Colors.white),
+      ),
+      onPressed: _decrementCounter,
+    );
+    // Buttons which will be passed into a Row and displays these widgets
+    var _buttons = <Widget>[incrementButton, decrementButton];
+
+    /// If the _reversed is true, reverses the order of the buttons.
+    /// Since this happens in the build method,
+    /// they're swapped whenever setState is called and _reversed has been updated.
+    if (_reversed) {
+      _buttons = _buttons.reversed.toList();
+    }
+
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -88,6 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      backgroundColor: this.colors[_counter % this.colors.length],
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
@@ -114,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(bottom: 70.0),
+              margin: EdgeInsets.only(bottom: 50.0),
               padding: EdgeInsets.all(8.0),
               decoration: BoxDecoration(
                   color: Colors.blue.withOpacity(0.25),
@@ -130,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headline1,
             ),
             // ElevatedButton(
             //   child: Text("Dec Counter"),
@@ -138,28 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
             // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.red)),
-                  child: Text(
-                    "Decrement",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: _decrementCounter,
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue)),
-                  child: Text(
-                    "Increment",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  onPressed: _incrementCounter,
-                ),
-              ],
+              children: _buttons,
             ),
           ],
         ),
