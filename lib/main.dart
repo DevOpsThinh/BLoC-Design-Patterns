@@ -37,13 +37,13 @@ class MyApp extends StatelessWidget {
         //primarySwatch: Colors.blue,
         primarySwatch: Colors.indigo,
       ),
-      home: const MyHomePage(title: "Thinh's Home"),
+      home: const ThinhHomePage(title: "Thinh's Home"),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+class ThinhHomePage extends StatefulWidget {
+  const ThinhHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -57,10 +57,10 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  ThinhHomePageState createState() => ThinhHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class ThinhHomePageState extends State<ThinhHomePage> {
   final CounterBloc _bloc = CounterBloc();
 
   // int _counter = 0;
@@ -72,16 +72,16 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _bloc.eventSink.add(CounterEvent.increment);
+      _bloc.eventSink.add(IncrementEvent());
     });
   }
 
   void _decrementCounter() {
-    setState(() => _bloc.eventSink.add(CounterEvent.decrement));
+    setState(() => _bloc.eventSink.add(DecrementEvent()));
   }
 
   void _resetCounter() {
-    setState(() => _bloc.eventSink.add(CounterEvent.reset));
+    setState(() => _bloc.eventSink.add(ResetEvent()));
   }
 
   @override
@@ -128,10 +128,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             StreamBuilder(
               stream: _bloc.counter,
-              initialData: 0,
-              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+              initialData: CounterState.initial(),
+              builder: (BuildContext context, AsyncSnapshot<CounterState> snapshot) {
                 return Text(
-                  '${snapshot.data}',
+                  '${snapshot.data?.counter}',
                   style: Theme.of(context).textTheme.headlineMedium,
                 );
               },
