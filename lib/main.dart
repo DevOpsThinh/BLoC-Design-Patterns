@@ -8,18 +8,21 @@
 ///                    Import Library                             ///
 ///--------------------------------------------------------------///
 
+import 'package:counter_app/counter_bloc.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 /// Class's document:
 /// MyApp is a widget
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Counter App',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -34,13 +37,13 @@ class MyApp extends StatelessWidget {
         //primarySwatch: Colors.blue,
         primarySwatch: Colors.indigo,
       ),
-      home: MyHomePage(title: "Thinh's Home Page"),
+      home: const MyHomePage(title: "Thinh's Home"),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -58,7 +61,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  final CounterBloc _bloc = CounterBloc();
+
+  // int _counter = 0;
 
   void _incrementCounter() {
     setState(() {
@@ -67,16 +72,16 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
+      _bloc.eventSink.add(CounterEvent.increment);
     });
   }
 
   void _decrementCounter() {
-    setState(() => _counter--);
+    setState(() => _bloc.eventSink.add(CounterEvent.decrement));
   }
 
   void _resetCounter() {
-    setState(() => _counter = 0);
+    setState(() => _bloc.eventSink.add(CounterEvent.reset));
   }
 
   @override
@@ -113,22 +118,24 @@ class _MyHomePageState extends State<MyHomePage> {
           // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-          Image.network(
+            Image.network(
               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgNGdH6wUBTLeEpqTb-53rFi3FoaGBJywyEA&usqp=CAU",
               width: 100.0,
               scale: 1.5,
             ),
-            Text(
+            const Text(
               'You have pushed the button this many times:',
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            StreamBuilder(
+              stream: _bloc.counter,
+              initialData: 0,
+              builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+                return Text(
+                  '${snapshot.data}',
+                  style: Theme.of(context).textTheme.headlineMedium,
+                );
+              },
             ),
-            // ElevatedButton(
-            //   child: Text("Dec Counter"),
-            //   onPressed: _decrementCounter,
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: <Widget>[
@@ -136,21 +143,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.red)),
-                  child: Text(
+                  onPressed: _decrementCounter,
+                  child: const Text(
                     "Decrement",
                     style: TextStyle(color: Colors.white),
                   ),
-                  onPressed: _decrementCounter,
                 ),
                 ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStateProperty.all<Color>(Colors.blue)),
-                  child: Text(
+                  onPressed: _incrementCounter,
+                  child: const Text(
                     "Increment",
                     style: TextStyle(color: Colors.white),
                   ),
-                  onPressed: _incrementCounter,
                 ),
               ],
             ),
@@ -160,8 +167,15 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _resetCounter,
         tooltip: 'Reset Counter',
-        child: Icon(Icons.refresh),
+        child: const Icon(Icons.refresh),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    //  Close bloc's stream controllers
+    _bloc.dispose();
   }
 }
