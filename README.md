@@ -1,19 +1,20 @@
 # counter_app
 
-A new Flutter project.
-Version: 1.0
+Exploring BLoC Pattern to manage states in Flutter applications
+Version: 1.0.1
 Author: Nguyen Truong Thinh
 
 # Doctor summary (to see all details, run flutter doctor):
 
-[✓] Flutter (Channel stable, 2.2.3, on macOS 11.5
-    darwin-x64, locale en-US)
-
-[✓] Xcode - develop for iOS and macOS
-[✓] Chrome - develop for the web
-[✓] Android Studio (version 4.2)
-[✓] VS Code (version 1.58.2)
-[✓] Connected device (2 available)
+[!] Flutter (Channel stable, 3.7.12, on Microsoft Windows [Version 10.0.22621.1265], locale en-US)
+[✓] Windows Version (Installed version of Windows is version 10 or higher)
+[✓] Android toolchain - develop for Android devices (Android SDK version 33.0.0)
+[✓] Visual Studio - develop for Windows (Visual Studio Build Tools 2019 16.11.18)
+[✓] Android Studio (version 2022.1)
+[✓] IntelliJ IDEA Ultimate Edition (version 2022.2)
+[✓] VS Code (version 1.77.3)
+[✓] Connected device (3 available)
+[✓] HTTP Host Availability
 
 ## Getting Started
 
