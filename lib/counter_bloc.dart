@@ -6,7 +6,7 @@ import 'dart:async';
 /// Created At: 23/ 4/ 2023
 ///------------------------------------------------------------------
 
-/// Enumeration's Class's document:
+/// Enumeration's document:
 /// CounterEvent is used to declare the event to increment/ decrement the count.
 enum CounterEvent {
   increment,
