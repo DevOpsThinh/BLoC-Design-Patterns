@@ -10,6 +10,7 @@
 
 import 'package:counter_app/counter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() => runApp(const MyApp());
 
@@ -61,7 +62,7 @@ class ThinhHomePage extends StatefulWidget {
 }
 
 class ThinhHomePageState extends State<ThinhHomePage> {
-  final CounterBloc _bloc = CounterBloc();
+  final CounterBloc _bloc = CounterBloc(CounterState.initial());
 
   // int _counter = 0;
 
@@ -72,16 +73,16 @@ class ThinhHomePageState extends State<ThinhHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _bloc.eventSink.add(IncrementEvent());
+      _bloc.add(IncrementEvent());
     });
   }
 
   void _decrementCounter() {
-    setState(() => _bloc.eventSink.add(DecrementEvent()));
+    setState(() => _bloc.add(DecrementEvent()));
   }
 
   void _resetCounter() {
-    setState(() => _bloc.eventSink.add(ResetEvent()));
+    setState(() => _bloc.add(ResetEvent()));
   }
 
   @override
@@ -126,13 +127,15 @@ class ThinhHomePageState extends State<ThinhHomePage> {
             const Text(
               'You have pushed the button this many times:',
             ),
-            StreamBuilder(
-              stream: _bloc.counter,
-              initialData: CounterState.initial(),
-              builder: (BuildContext context, AsyncSnapshot<CounterState> snapshot) {
+            BlocBuilder<CounterBloc, CounterState>(
+              bloc: _bloc,
+              builder: (context, state) {
                 return Text(
-                  '${snapshot.data?.counter}',
-                  style: Theme.of(context).textTheme.headlineMedium,
+                  '${state.counter}',
+                  style: Theme
+                      .of(context)
+                      .textTheme
+                      .headlineMedium,
                 );
               },
             ),
@@ -142,7 +145,7 @@ class ThinhHomePageState extends State<ThinhHomePage> {
                 ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.red)),
+                      MaterialStateProperty.all<Color>(Colors.red)),
                   onPressed: _decrementCounter,
                   child: const Text(
                     "Decrement",
@@ -152,7 +155,7 @@ class ThinhHomePageState extends State<ThinhHomePage> {
                 ElevatedButton(
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue)),
+                      MaterialStateProperty.all<Color>(Colors.blue)),
                   onPressed: _incrementCounter,
                   child: const Text(
                     "Increment",
@@ -176,6 +179,6 @@ class ThinhHomePageState extends State<ThinhHomePage> {
   void dispose() {
     super.dispose();
     //  Close bloc's stream controllers
-    _bloc.dispose();
+    _bloc.close();
   }
 }
