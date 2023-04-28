@@ -4,6 +4,7 @@
 /// Created At: 28/ 4/ 2023
 ///------------------------------------------------------------------
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -13,11 +14,14 @@ import 'edit_entry.dart';
 /// Class's document:
 /// The Journal Home Page
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
+
+  final FirebaseAnalytics analytics;
+  final FirebaseAnalyticsObserver observer;
+
+  const HomePage({super.key, required this.analytics, required this.observer});
 
   @override
   HomePageState createState() => HomePageState();
@@ -25,13 +29,41 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   late Database _database;
+  late String _message;
 
   @override
   void initState() {
     super.initState();
 
+    _message = "Send Analytics event";
     _database = Database(journals: []);
-}
+  }
+
+  void setMessage(String message) {
+    setState(() {
+      _message = message;
+    });
+  }
+
+  Future<void> _sendAnalyticsEvent() async {
+    // Only strings and numbers (longs & doubles for android, ints and doubles for iOS) are supported for GA custom event parameters:
+    // https://firebase.google.com/docs/reference/ios/firebaseanalytics/api/reference/Classes/FIRAnalytics#+logeventwithname:parameters:
+    // https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics#public-void-logevent-string-name,-bundle-params
+    await widget.analytics.logEvent(
+      name: 'test_event',
+      parameters: <String, dynamic>{
+        'string': 'string',
+        'int': 42,
+        'long': 12345678910,
+        'double': 42.0,
+        // Only strings and numbers (ints & doubles) are supported for GA custom event parameters:
+        // https://developers.google.com/analytics/devguides/collection/analyticsjs/custom-dims-mets#overview
+        'bool': true.toString(),
+      },
+    );
+
+    setMessage('logEvent succeeded');
+  }
 
   Future<List<Journal>> _loadJournals() async {
     await DatabaseFileRoutines().readJournals().then((journalsJson) {
@@ -55,6 +87,8 @@ class HomePageState extends State<HomePage> {
               ),
           fullscreenDialog: true),
     );
+
+    _sendAnalyticsEvent();
 
     switch (journalEdit.action) {
       case 'Save':
@@ -80,7 +114,33 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Me & Journal'),
+        title: Text('Me & Journal',
+            style: TextStyle(color: Colors.lightGreen.shade800)),
+        elevation: 0.0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(32.0),
+          child: Container(),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+                colors: [Colors.lightGreen, Colors.lightGreen.shade50],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter),
+          ),
+        ),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () {
+              // TODO: Add logout method
+            },
+            icon: Icon(
+              Icons.exit_to_app,
+              color: Colors.lightGreen.shade800,
+            ),
+            tooltip: "Sign Out",
+          )
+        ],
       ),
       body: FutureBuilder(
         initialData: const [],
@@ -91,9 +151,17 @@ class HomePageState extends State<HomePage> {
               : _buildListViewSeparated(snapshot);
         },
       ),
-      bottomNavigationBar: const BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        child: Padding(padding: EdgeInsets.all(24.0)),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 3.0,
+        child: Container(
+          height: 44.0,
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            colors: [Colors.lightGreen.shade50, Colors.lightGreen],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          )),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
@@ -104,6 +172,7 @@ class HomePageState extends State<HomePage> {
               add: true,
               index: -1,
               journal: Journal(id: "", date: "", mood: "", note: ""));
+          _sendAnalyticsEvent();
         },
       ),
     );

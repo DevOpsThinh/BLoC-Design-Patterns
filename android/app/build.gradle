@@ -43,8 +43,8 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.forever.bee.counter_app"
-        minSdkVersion flutter.minSdkVersion
+        applicationId "com.forever.bee.journal_flutter"
+        minSdkVersion 24
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
