@@ -29,6 +29,10 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
 
+  # path_provider package
+  path_provider: ^2.0.14
+  # intl package
+  intl: ^0.18.1
   #flutter_bloc package
   flutter_bloc: ^8.1.2
 
