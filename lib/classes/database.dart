@@ -8,6 +8,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
+/// Class's document:
+/// Handles getting the path to the device's local documents directory,
+/// saving & reading the database file by using the [File] class.
 class DatabaseFileRoutines {
   Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
@@ -24,14 +27,14 @@ class DatabaseFileRoutines {
       final file = await _localFile;
 
       if (!file.existsSync()) {
-        print("File does not Exist: ${file.absolute}");
+        // print("File does not Exist: ${file.absolute}");
         await writeJournals('{"journals": []}');
       }
       // Read the file
       String contents = await file.readAsString();
       return contents;
     } catch (e) {
-      print("error readJournals: $e");
+      // print("error readJournals: $e");
       return "";
     }
   }
@@ -43,20 +46,20 @@ class DatabaseFileRoutines {
   }
 }
 
-/// Local Storage JSON Database file and Journal class
-/// To read and parse from JSON data - databaseFromJson(jsonString)
-/// To save and parse to JSON data - databaseToJson(jsonString)
+// Local Storage JSON Database file and Journal class
 
+/// To read and parse from JSON data
 Database databaseFromJson(String stringToDecode) {
   final dataFromJson = json.decode(stringToDecode);
   return Database.fromJson(dataFromJson);
 }
-
+/// To save and parse to JSON data
 String databaseToJson(Database data) {
   final dataToJson = data.toJson();
   return json.encode(dataToJson);
 }
-
+/// Class's document:
+/// Handles decoding & encoding the JSON objects, and converting them to a [List] of [Journal] entries.
 class Database {
   List<Journal> journals;
 
@@ -65,14 +68,15 @@ class Database {
   });
 
   factory Database.fromJson(Map<String, dynamic> json) => Database(
-        journals: List<Journal>.from(json["journals"].map((d) => d.fromJson())),
+        journals: List<Journal>.from(json["journals"].map((d) => Journal.fromJson(d))),
       );
 
   Map<String, dynamic> toJson() => {
         "journals": List<dynamic>.from(journals.map((e) => e.toJson())),
       };
 }
-
+/// Class's document:
+/// Handles decoding & encoding the JSON objects for each journal entry.
 class Journal {
   String id;
   String date;
@@ -100,7 +104,7 @@ class Journal {
         "note": note,
       };
 }
-
+/// Class's document:
 /// Used for Data Entry to pass between pages
 class JournalEdit {
   String action;

@@ -10,6 +10,8 @@ import 'package:intl/intl.dart';
 import '../classes/database.dart';
 import 'edit_entry.dart';
 
+/// Class's document:
+/// The Journal Home Page
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 

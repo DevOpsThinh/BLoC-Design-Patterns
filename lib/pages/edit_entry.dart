@@ -1,14 +1,16 @@
-import 'package:counter_app/classes/database.dart';
-import 'package:intl/intl.dart';
-import 'dart:math';
-import 'package:flutter/material.dart';
-
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 28/ 4/ 2023
 ///------------------------------------------------------------------
 
+import 'package:counter_app/classes/database.dart';
+import 'package:intl/intl.dart';
+import 'dart:math';
+import 'package:flutter/material.dart';
+
+/// Class's document:
+/// The Journal Entry Page
 class EditJournalEntry extends StatefulWidget {
   final bool add;
   final int index;
