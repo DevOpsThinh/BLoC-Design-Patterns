@@ -88,8 +88,6 @@ class HomePageState extends State<HomePage> {
           fullscreenDialog: true),
     );
 
-    _sendAnalyticsEvent();
-
     switch (journalEdit.action) {
       case 'Save':
         if (add) {
@@ -102,6 +100,7 @@ class HomePageState extends State<HomePage> {
           });
         }
         DatabaseFileRoutines().writeJournals(databaseToJson(_database));
+        _sendAnalyticsEvent();
         break;
       case 'Cancel':
         break;
@@ -133,6 +132,8 @@ class HomePageState extends State<HomePage> {
           IconButton(
             onPressed: () {
               // TODO: Add logout method
+              setMessage("Logged out");
+              _sendAnalyticsEvent();
             },
             icon: Icon(
               Icons.exit_to_app,
