@@ -14,7 +14,7 @@ class Validators {
     if (pass.length >= 8) {
       sink.add(pass);
     } else if (pass.isNotEmpty) {
-      sink.addError("Password needs to be at least 8 characters");
+      sink.addError("Password needs to be at least 8 characters!");
     }
   });
 
