@@ -29,19 +29,19 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   late Database _database;
-  late String _message;
+  late String message;
 
   @override
   void initState() {
     super.initState();
 
-    _message = "Send Analytics event";
+    message = "Send Analytics event";
     _database = Database(journals: []);
   }
 
   void setMessage(String message) {
     setState(() {
-      _message = message;
+      message = message;
     });
   }
 
