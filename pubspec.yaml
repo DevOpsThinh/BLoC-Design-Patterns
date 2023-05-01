@@ -38,10 +38,10 @@ dependencies:
 
   # Firebase services packages
   firebase_core: ^2.10.0
-  firebase_analytics: ^10.2.1
   firebase_auth: ^4.2.2
   cloud_firestore: ^4.5.3
-  firebase_crashlytics: ^3.1.2
+#  firebase_analytics: ^10.2.1
+#  firebase_crashlytics: ^3.1.2
 
 dev_dependencies:
   flutter_test:

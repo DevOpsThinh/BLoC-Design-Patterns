@@ -13,7 +13,7 @@ import 'db_firestore_api.dart';
 /// A concrete firebase firestore database service class that implements the [DatabaseApi] abstract class
 class DbFirestoreService implements DatabaseApi {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final String _collectionJournals = "me-journals";
+  final String _collectionJournals = "journals";
 
   DbFirestoreService() {
     _firestore.settings;

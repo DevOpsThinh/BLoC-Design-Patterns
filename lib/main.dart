@@ -1,9 +1,3 @@
-///------------------------------------------------------------------
-/// Topic: Flutter - Dart
-/// Author: Nguyen Truong Thinh
-/// Created At: 18/ 7/ 2021
-///------------------------------------------------------------------
-
 import 'package:counter_app/blocs/auth/authentication_bloc_provider.dart';
 import 'package:counter_app/blocs/home/home_bloc.dart';
 import 'package:counter_app/blocs/home/home_bloc_provider.dart';
@@ -17,14 +11,20 @@ import 'package:flutter/material.dart';
 import 'blocs/auth/authentication_bloc.dart';
 import 'firebase_options.dart';
 
+///------------------------------------------------------------------
+/// Topic: Flutter - Dart
+/// Author: Nguyen Truong Thinh
+/// Created At: 18/ 7/ 2021
+///------------------------------------------------------------------
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(const MyApp());
 }
-
 
 /// Class's document:
 /// MyApp is a widget
@@ -40,14 +40,14 @@ class MyApp extends StatelessWidget {
     return AuthenticationBlocProvider(
       authenticationBloc: authBloc,
       child: StreamBuilder(
-        initialData: null,
+        initialData: authBloc.listLogoutUser,
         stream: authBloc.user,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
               color: Colors.lightGreen,
               child:  const CircularProgressIndicator(strokeWidth: 5.0));
-          } else if (snapshot.hasData) {
+          } else if (!snapshot.hasData) {
             return HomeBlocProvider(
                 homeBloc: HomeBloc(DbFirestoreService(), authService),
                 uid: snapshot.data,

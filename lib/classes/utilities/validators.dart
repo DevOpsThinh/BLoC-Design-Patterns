@@ -13,7 +13,7 @@ class Validators {
       StreamTransformer<String, String>.fromHandlers(handleData: (pass, sink) {
     if (pass.length >= 8) {
       sink.add(pass);
-    } else if (pass.isNotEmpty) {
+    } else if (pass.isEmpty) {
       sink.addError("Password needs to be at least 8 characters!");
     }
   });
@@ -22,7 +22,7 @@ class Validators {
       StreamTransformer<String, String>.fromHandlers(handleData: (email, sink) {
     if (email.contains("@") && email.contains(".")) {
       sink.add(email);
-    } else if (email.isNotEmpty) {
+    } else if (email.isEmpty) {
       sink.addError("Enter a valid email!");
     }
   });

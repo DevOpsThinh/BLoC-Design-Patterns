@@ -21,9 +21,8 @@ class HomeBlocProvider extends InheritedWidget {
       required this.uid})
       : super(child: child);
 
-  static HomeBlocProvider of(BuildContext context) {
-    return (context.dependOnInheritedWidgetOfExactType(aspect: HomeBlocProvider)
-        as HomeBlocProvider);
+  static HomeBlocProvider? of(BuildContext context) {
+    return (context.dependOnInheritedWidgetOfExactType<HomeBlocProvider>());
   }
 
   @override

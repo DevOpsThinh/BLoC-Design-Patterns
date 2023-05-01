@@ -1,11 +1,11 @@
+import 'dart:async';
+import 'package:counter_app/services/authentication_api.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 30/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'dart:async';
-import 'package:counter_app/services/authentication_api.dart';
 
 /// Class's document:
 /// Identifying logged-in user credentials & monitoring user authentication login status.
@@ -21,14 +21,17 @@ class AuthenticationBloc {
 
   Stream<String> get user => _authController.stream;
 
-  Stream<bool> get logoutUsersList => _logoutController.stream;
+  Stream<bool> get listLogoutUser => _logoutController.stream;
 
   AuthenticationBloc(this.authenticationApi) {
     onAuthChanged();
   }
 
   void onAuthChanged() {
-    authenticationApi.getFirebaseAuth().authStateChanges().listen((user) {
+    authenticationApi
+        .getFirebaseAuth()
+        .authStateChanges()
+        .listen((user) {
       final String uid = user?.uid;
       addUser.add(uid);
     });

@@ -46,9 +46,9 @@ class HomePageState extends State<HomePage> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    _authBloc = AuthenticationBlocProvider.of(context).authenticationBloc;
-    _homeBloc = HomeBlocProvider.of(context).homeBloc;
-    _uid = HomeBlocProvider.of(context).uid;
+    _authBloc = AuthenticationBlocProvider.of(context)!.authenticationBloc;
+    _homeBloc = HomeBlocProvider.of(context)!.homeBloc;
+    _uid = HomeBlocProvider.of(context)!.uid;
   }
 
   /// Add or Edit Journal Entry and call the Show Entry Dialog

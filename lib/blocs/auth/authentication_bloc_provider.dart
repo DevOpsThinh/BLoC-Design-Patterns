@@ -19,9 +19,8 @@ class AuthenticationBlocProvider extends InheritedWidget {
       required this.authenticationBloc})
       : super(child: child);
 
-  static AuthenticationBlocProvider of(BuildContext context) {
-    return (context.dependOnInheritedWidgetOfExactType(
-        aspect: AuthenticationBlocProvider) as AuthenticationBlocProvider);
+  static AuthenticationBlocProvider? of(BuildContext context) {
+    return (context.dependOnInheritedWidgetOfExactType<AuthenticationBlocProvider>());
   }
 
   @override

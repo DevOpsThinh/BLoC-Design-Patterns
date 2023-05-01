@@ -44,7 +44,7 @@ class EditJournalEntryState extends State<EditJournalEntry> {
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    _journalEditBloc = JournalEditBlocProvider.of(context).journalEditBloc;
+    _journalEditBloc = JournalEditBlocProvider.of(context)!.journalEditBloc;
   }
 
   // Date Picker

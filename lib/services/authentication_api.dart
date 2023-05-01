@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
@@ -8,12 +8,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 /// Class's document:
 ///  Authentication service abstract class
-abstract class AuthenticationApi {
+abstract class AuthenticationApi extends ChangeNotifier{
   getFirebaseAuth();
-  Future<String> currentUserUid();
+  Future<String?> currentUserUid();
   Future<void> signOut();
-  Future<String> signInWithEmailAndPassword({ required String email, required String password });
-  Future<String> createUserWithEmailAndPassword({ required String email, required String password });
+  Future<String?> signInWithEmailAndPassword({ required String email, required String password });
+  Future<String?> createUserWithEmailAndPassword({ required String email, required String password });
   Future<void> sendEmailVerification();
-  Future<bool> isEmailVerified();
+  Future<bool?> isEmailVerified();
 }

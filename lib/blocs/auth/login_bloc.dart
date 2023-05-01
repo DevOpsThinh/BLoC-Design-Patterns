@@ -1,13 +1,13 @@
+import 'dart:async';
+
+import 'package:counter_app/classes/utilities/validators.dart';
+import 'package:counter_app/services/authentication_api.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 30/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'dart:async';
-
-import 'package:counter_app/classes/utilities/validators.dart';
-import 'package:counter_app/services/authentication_api.dart';
 
 /// Class's document:
 /// Calling the Firebase Authentication service to log in or create a new user.

@@ -17,9 +17,8 @@ class JournalEditBlocProvider extends InheritedWidget {
       {super.key, required Widget child, required this.journalEditBloc})
       : super(child: child);
 
-  static JournalEditBlocProvider of(BuildContext context) =>
-      (context.dependOnInheritedWidgetOfExactType(
-          aspect: JournalEditBlocProvider) as JournalEditBlocProvider);
+  static JournalEditBlocProvider? of(BuildContext context) =>
+      (context.dependOnInheritedWidgetOfExactType<JournalEditBlocProvider>());
 
   @override
   bool updateShouldNotify(JournalEditBlocProvider oldWidget) => false;
