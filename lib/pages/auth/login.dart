@@ -89,7 +89,7 @@ class LoginState extends State<Login> {
                         elevation: 16.0,
                         backgroundColor: Colors.lightGreen.shade200,
                         disabledBackgroundColor: Colors.grey.shade100),
-                    child: const Text("Login"))),
+                    child: const Text("Create Account"))),
         TextButton(
             onPressed: () {
               _loginBloc.loginOrCreateButtonChanged.add("Login");

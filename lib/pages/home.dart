@@ -4,11 +4,17 @@
 /// Created At: 28/ 4/ 2023
 ///------------------------------------------------------------------
 
-import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:counter_app/blocs/auth/authentication_bloc.dart';
+import 'package:counter_app/blocs/auth/authentication_bloc_provider.dart';
+import 'package:counter_app/blocs/home/home_bloc.dart';
+import 'package:counter_app/blocs/home/home_bloc_provider.dart';
+import 'package:counter_app/blocs/journal/journal_edit_bloc_provider.dart';
+import 'package:counter_app/blocs/journal/journal_entry_bloc.dart';
+import 'package:counter_app/classes/utilities/FormatDates.dart';
+import 'package:counter_app/classes/utilities/mood_icons.dart';
+import 'package:counter_app/models/journal.dart';
+import 'package:counter_app/services/db_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
-import '../classes/database.dart';
 import 'edit_entry.dart';
 
 /// Class's document:
@@ -18,95 +24,74 @@ class HomePage extends StatefulWidget {
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
 
-  final FirebaseAnalytics analytics;
-  final FirebaseAnalyticsObserver observer;
-
-  const HomePage({super.key, required this.analytics, required this.observer});
+  const HomePage({super.key});
 
   @override
   HomePageState createState() => HomePageState();
 }
 
 class HomePageState extends State<HomePage> {
-  late Database _database;
-  late String message;
+  late AuthenticationBloc _authBloc;
+  late HomeBloc _homeBloc;
+  late String _uid;
+
+  final MoodIcons _moodIcons = const MoodIcons(
+      title: "Very Satisfied",
+      color: Colors.amber,
+      rotation: 0.4,
+      icon: Icons.sentiment_very_satisfied);
+  final FormatDates _formatDates = FormatDates();
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-    message = "Send Analytics event";
-    _database = Database(journals: []);
+    _authBloc = AuthenticationBlocProvider.of(context).authenticationBloc;
+    _homeBloc = HomeBlocProvider.of(context).homeBloc;
+    _uid = HomeBlocProvider.of(context).uid;
   }
 
-  void setMessage(String message) {
-    setState(() {
-      message = message;
-    });
-  }
-
-  Future<void> _sendAnalyticsEvent() async {
-    // Only strings and numbers (longs & doubles for android, ints and doubles for iOS) are supported for GA custom event parameters:
-    // https://firebase.google.com/docs/reference/ios/firebaseanalytics/api/reference/Classes/FIRAnalytics#+logeventwithname:parameters:
-    // https://firebase.google.com/docs/reference/android/com/google/firebase/analytics/FirebaseAnalytics#public-void-logevent-string-name,-bundle-params
-    await widget.analytics.logEvent(
-      name: 'test_event',
-      parameters: <String, dynamic>{
-        'string': 'string',
-        'int': 42,
-        'long': 12345678910,
-        'double': 42.0,
-        // Only strings and numbers (ints & doubles) are supported for GA custom event parameters:
-        // https://developers.google.com/analytics/devguides/collection/analyticsjs/custom-dims-mets#overview
-        'bool': true.toString(),
-      },
-    );
-
-    setMessage('logEvent succeeded');
-  }
-
-  Future<List<Journal>> _loadJournals() async {
-    await DatabaseFileRoutines().readJournals().then((journalsJson) {
-      _database = databaseFromJson(journalsJson);
-      _database.journals
-          .sort((comp1, comp2) => comp2.date.compareTo(comp1.date));
-    });
-    return _database.journals;
-  }
-
-  void _addOrEditJournal(
-      {required bool add, required int index, required Journal journal}) async {
-    JournalEdit journalEdit = JournalEdit(action: ' ', journal: journal);
-    journalEdit = await Navigator.push(
+  /// Add or Edit Journal Entry and call the Show Entry Dialog
+  void _addOrEditJournal({required bool add, required Journal journal}) {
+    Navigator.push(
       context,
       MaterialPageRoute(
-          builder: (context) => EditJournalEntry(
-                add: add,
-                index: index,
-                journalEdit: journalEdit,
+          builder: (BuildContext builder) => JournalEditBlocProvider(
+                journalEditBloc:
+                    JournalEditBloc(add, journal, DbFirestoreService()),
+                child: const EditJournalEntry(),
               ),
           fullscreenDialog: true),
     );
+  }
 
-    switch (journalEdit.action) {
-      case 'Save':
-        if (add) {
-          setState(() {
-            _database.journals.add(journalEdit.journal);
-          });
-        } else {
-          setState(() {
-            _database.journals[index] = journalEdit.journal;
-          });
-        }
-        DatabaseFileRoutines().writeJournals(databaseToJson(_database));
-        _sendAnalyticsEvent();
-        break;
-      case 'Cancel':
-        break;
-      default:
-        break;
-    }
+  Future<bool> _confirmDeleteJournal() async {
+    return await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+              title: const Text("Delete Journal"),
+              content: const Text("Are your sure you would like to Delete?"),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, false);
+                  },
+                  style: TextButton.styleFrom(
+                      foregroundColor: Colors.lightGreen, elevation: 0.0),
+                  child: const Text('CANCEL'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context, true);
+                  },
+                  style: TextButton.styleFrom(
+                      foregroundColor: Colors.red, elevation: 3),
+                  child: const Text('DELETE'),
+                ),
+              ]);
+        });
   }
 
   @override
@@ -131,9 +116,7 @@ class HomePageState extends State<HomePage> {
         actions: <Widget>[
           IconButton(
             onPressed: () {
-              // TODO: Add logout method
-              setMessage("Logged out");
-              _sendAnalyticsEvent();
+              _authBloc.logoutUser.add(true);
             },
             icon: Icon(
               Icons.exit_to_app,
@@ -143,13 +126,18 @@ class HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: FutureBuilder(
-        initialData: const [],
-        future: _loadJournals(),
+      body: StreamBuilder(
+        stream: _homeBloc.listJournal,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          return !snapshot.hasData
-              ? const Center(child: CircularProgressIndicator())
-              : _buildListViewSeparated(snapshot);
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasData) {
+            return _buildListViewSeparated(snapshot);
+          } else {
+            return const Center(child: Text("Add Journals"));
+          }
         },
       ),
       bottomNavigationBar: BottomAppBar(
@@ -171,9 +159,8 @@ class HomePageState extends State<HomePage> {
         onPressed: () async {
           _addOrEditJournal(
               add: true,
-              index: -1,
-              journal: Journal(id: "", date: "", mood: "", note: ""));
-          _sendAnalyticsEvent();
+              journal: Journal(
+                  uid: _uid, documentID: '', date: '', mood: _moodIcons.title, note: ''));
         },
       ),
     );
@@ -182,73 +169,130 @@ class HomePageState extends State<HomePage> {
   /// Build the ListView with Separator
   Widget _buildListViewSeparated(AsyncSnapshot snapshot) {
     return ListView.separated(
+        itemCount: snapshot.data.length,
         itemBuilder: (BuildContext context, int index) {
-          String titleDate = DateFormat.yMMMd()
-              .format(DateTime.parse(snapshot.data[index].date));
+          String titleDate = _formatDates
+              .dateFormatShortMonthDayYear(snapshot.data[index].date);
           String subtitle =
               snapshot.data[index].mood + "\n" + snapshot.data[index].note;
 
           return Dismissible(
-            key: Key(snapshot.data[index].id),
-            background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.only(right: 16.0),
-              child: const Icon(
-                Icons.delete,
-                color: Colors.white,
+              key: Key(snapshot.data[index].documentID),
+              background: Container(
+                color: Colors.red,
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.only(left: 16.0),
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            secondaryBackground: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 16.0),
-              child: const Icon(
-                Icons.delete,
-                color: Colors.white,
+              secondaryBackground: Container(
+                color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.only(right: 16.0),
+                child: const Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            child: ListTile(
-              leading: Column(
-                children: <Widget>[
-                  Text(
-                    DateFormat.d()
-                        .format(DateTime.parse(snapshot.data[index].date)),
-                    style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 32.0,
-                        color: Colors.blue),
+              child: ListTile(
+                leading: Column(
+                  children: <Widget>[
+                    Text(
+                      _formatDates
+                          .dateFormatDayNumber(snapshot.data[index].date),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32.0,
+                          color: Colors.lightGreen),
+                    ),
+                    Text(_formatDates
+                        .dateFormatShortDayName(snapshot.data[index].date)),
+                  ],
+                ),
+                trailing: Transform(
+                  transform: Matrix4.identity()
+                    ..rotateZ(
+                        _moodIcons.getMoodRotation(snapshot.data[index].mood)),
+                  alignment: Alignment.center,
+                  child: Icon(
+                    _moodIcons.getMoodIcon(snapshot.data[index].mood),
+                    color: _moodIcons.getMoodColor(snapshot.data[index].mood),
+                    size: 42.0,
                   ),
-                  Text(DateFormat.E()
-                      .format(DateTime.parse(snapshot.data[index].date))),
-                ],
+                ),
+                title: Text(
+                  titleDate,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(subtitle),
+                onTap: () {
+                  _addOrEditJournal(
+                    add: false,
+                    journal: Journal(
+                        documentID: snapshot.data[index].documentID,
+                        date: snapshot.data[index].date,
+                        mood: snapshot.data[index].mood,
+                        note: snapshot.data[index].note,
+                        uid: snapshot.data[index].uid),
+                  );
+                },
               ),
-              title: Text(
-                titleDate,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(subtitle),
-              onTap: () async {
-                _addOrEditJournal(
-                  add: false,
-                  index: index,
-                  journal: snapshot.data[index],
-                );
-              },
-            ),
-            onDismissed: (direction) {
-              setState(() {
-                _database.journals.removeAt(index);
+              confirmDismiss: (direction) async {
+                bool isDelete = await _confirmDeleteJournal();
+                if (isDelete) {
+                  _homeBloc.deleteJournal.add(snapshot.data[index]);
+                }
+                return isDelete;
               });
-              DatabaseFileRoutines().writeJournals(databaseToJson(_database));
-            },
-          );
         },
         separatorBuilder: (BuildContext context, int index) {
           return const Divider(
             color: Colors.blueGrey,
           );
         },
-        itemCount: snapshot.data.length);
+    );
   }
+
+  @override
+  void dispose() {
+    _homeBloc.dispose();
+    super.dispose();
+  }
+
+// void _addOrEditJournal(
+//     {required bool add, required int index, required Journal journal}) async {
+//   JournalEdit journalEdit = JournalEdit(action: ' ', journal: journal);
+//   journalEdit = await Navigator.push(
+//     context,
+//     MaterialPageRoute(
+//         builder: (context) => EditJournalEntry(
+//               add: add,
+//               index: index,
+//               journalEdit: journalEdit,
+//             ),
+//         fullscreenDialog: true),
+//   );
+//
+//   switch (journalEdit.action) {
+//     case 'Save':
+//       if (add) {
+//         setState(() {
+//           _database.journals.add(journalEdit.journal);
+//         });
+//       } else {
+//         setState(() {
+//           _database.journals[index] = journalEdit.journal;
+//         });
+//       }
+//       DatabaseFileRoutines().writeJournals(databaseToJson(_database));
+//       _sendAnalyticsEvent();
+//       break;
+//     case 'Cancel':
+//       break;
+//     default:
+//       break;
+//   }
+// }
 }

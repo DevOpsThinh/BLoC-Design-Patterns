@@ -19,41 +19,36 @@ class AuthenticationService extends AuthenticationApi {
 
   @override
   Future<String> createUserWithEmailAndPassword(
-      {String email = "invalid.email@gmail.com",
-      String password = "production1ready1app"}) async {
-    User user = (await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password)) as User;
-    return user.uid;
+      {required String email, required String password}) async {
+    final UserCredential user = (await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password)) ;
+    return user.credential.toString();
   }
 
   @override
   Future<String> currentUserUid() async {
-    await null;
-    User user = _firebaseAuth.currentUser!;
+    final User user = _firebaseAuth.currentUser!;
     return user.uid;
   }
 
   @override
   Future<bool> isEmailVerified() async {
-    await null;
-    User user = _firebaseAuth.currentUser!;
+    final User user = _firebaseAuth.currentUser!;
     return user.emailVerified;
   }
 
   @override
   Future<void> sendEmailVerification() async {
-    await null;
-    User user = _firebaseAuth.currentUser!;
+    final User user = _firebaseAuth.currentUser!;
     user.sendEmailVerification();
   }
 
   @override
   Future<String> signInWithEmailAndPassword(
-      {String email = "invalid.email@gmail.com",
-      String password = "production1ready1app"}) async {
-    User user = (await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password)) as User;
-    return user.uid;
+      {required String email, required String password}) async {
+    final UserCredential user = (await _firebaseAuth.signInWithEmailAndPassword(
+        email: email, password: password));
+    return user.credential.toString();
   }
 
   @override

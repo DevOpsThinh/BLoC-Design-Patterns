@@ -4,60 +4,52 @@
 /// Created At: 28/ 4/ 2023
 ///------------------------------------------------------------------
 
-import 'package:counter_app/classes/database.dart';
-import 'package:intl/intl.dart';
-import 'dart:math';
+import 'package:counter_app/blocs/journal/journal_edit_bloc_provider.dart';
+import 'package:counter_app/blocs/journal/journal_entry_bloc.dart';
+import 'package:counter_app/classes/utilities/FormatDates.dart';
+import 'package:counter_app/classes/utilities/mood_icons.dart';
+
 import 'package:flutter/material.dart';
 
 /// Class's document:
 /// The Journal Entry Page
 class EditJournalEntry extends StatefulWidget {
-  final bool add;
-  final int index;
-  final JournalEdit journalEdit;
-
-  const EditJournalEntry(
-      {super.key,
-      required this.add,
-      required this.index,
-      required this.journalEdit});
+  const EditJournalEntry({super.key});
 
   @override
   EditJournalEntryState createState() => EditJournalEntryState();
 }
 
 class EditJournalEntryState extends State<EditJournalEntry> {
-  late JournalEdit _journalEdit;
-  late String _title;
-  late DateTime _selectedDate;
-  final TextEditingController _moodController = TextEditingController();
-  final TextEditingController _noteController = TextEditingController();
-  final FocusNode _moodFocus = FocusNode();
-  final FocusNode _noteFocus = FocusNode();
+  late JournalEditBloc _journalEditBloc;
+  late FormatDates _formatDates;
+  late MoodIcons _moodIcons;
+  late TextEditingController _noteController;
 
   @override
   void initState() {
     super.initState();
 
-    _journalEdit =
-        JournalEdit(action: 'Cancel', journal: widget.journalEdit.journal);
-    _title = widget.add ? 'Add' : 'Edit';
-    _journalEdit.journal = widget.journalEdit.journal;
+    _formatDates = FormatDates();
+    _moodIcons = const MoodIcons(
+        title: "Very Satisfied",
+        color: Colors.amber,
+        rotation: 0.4,
+        icon: Icons.sentiment_very_satisfied);
+    _noteController = TextEditingController();
+    _noteController.text = "";
+  }
 
-    if (widget.add) {
-      _selectedDate = DateTime.now();
-      _moodController.text = "";
-      _noteController.text = "";
-    } else {
-      _selectedDate = DateTime.parse(_journalEdit.journal.date);
-      _moodController.text = _journalEdit.journal.mood;
-      _noteController.text = _journalEdit.journal.note;
-    }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    _journalEditBloc = JournalEditBlocProvider.of(context).journalEditBloc;
   }
 
   // Date Picker
-  Future<DateTime> _selectDate(DateTime selectedDate) async {
-    DateTime initialDate = selectedDate;
+  Future<String> _selectDate(String selectedDate) async {
+    DateTime initialDate = DateTime.parse(selectedDate);
 
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -68,122 +60,174 @@ class EditJournalEntryState extends State<EditJournalEntry> {
 
     if (pickedDate != null) {
       selectedDate = DateTime(
-          pickedDate.year,
-          pickedDate.month,
-          pickedDate.day,
-          pickedDate.hour,
-          pickedDate.minute,
-          pickedDate.second,
-          pickedDate.millisecond,
-          pickedDate.microsecond);
+              pickedDate.year,
+              pickedDate.month,
+              pickedDate.day,
+              pickedDate.hour,
+              pickedDate.minute,
+              pickedDate.second,
+              pickedDate.millisecond,
+              pickedDate.microsecond)
+          .toString();
     }
     return selectedDate;
+  }
+
+  void _addOrUpdateJournal() {
+    _journalEditBloc.saveJournalChanged.add("Save");
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$_title Entry'),
+        title: Text("Data Entry",
+            style: TextStyle(color: Colors.lightGreen.shade800)),
         automaticallyImplyLeading: false,
+        elevation: 3.0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.lightGreen, Colors.lightGreen.shade50],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
       ),
       body: SafeArea(
+        minimum: const EdgeInsets.all(16.0),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              TextButton(
-                child: Row(
-                  children: <Widget>[
-                    const Icon(
-                      Icons.calendar_today,
-                      size: 22.0,
-                      color: Colors.black54,
+              StreamBuilder(
+                stream: _journalEditBloc.dateEdit,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData) {
+                    return Container();
+                  }
+                  return TextButton(
+                    onPressed: () async {
+                      FocusScope.of(context).requestFocus(FocusNode());
+                      String pickerDate = await _selectDate(snapshot.data);
+                      _journalEditBloc.dateEditChanged.add(pickerDate);
+                    },
+                    style: TextButton.styleFrom(
+                        padding: const EdgeInsets.all(0.0),
+                        foregroundColor: Colors.black,
+                        elevation: 3,
+                        backgroundColor: Colors.lightGreen.shade100),
+                    child: Row(
+                      children: <Widget>[
+                        const Icon(Icons.calendar_today,
+                            size: 22.0, color: Colors.black54),
+                        const SizedBox(width: 16.0),
+                        Text(
+                          _formatDates
+                              .dateFormatShortMonthDayYear(snapshot.data),
+                          style: const TextStyle(
+                              color: Colors.black54,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.black54,
+                        )
+                      ],
                     ),
-                    const SizedBox(
-                      width: 16.0,
-                    ),
-                    Text(
-                      DateFormat.yMMMEd().format(_selectedDate),
-                      style: const TextStyle(
-                          color: Colors.black54, fontWeight: FontWeight.bold),
-                    ),
-                    const Icon(
-                      Icons.arrow_drop_down,
-                      color: Colors.black54,
-                    ),
-                  ],
-                ),
-                onPressed: () async {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  DateTime pickerDate = await _selectDate(_selectedDate);
-                  setState(() {
-                    _selectedDate = pickerDate;
-                  });
+                  );
                 },
               ),
-              TextField(
-                controller: _moodController,
-                autofocus: true,
-                textInputAction: TextInputAction.next,
-                focusNode: _moodFocus,
-                textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Mood',
-                  icon: Icon(Icons.mood),
-                ),
-                onSubmitted: (submitted) {
-                  FocusScope.of(context).requestFocus(_noteFocus);
+              StreamBuilder(
+                stream: _journalEditBloc.moodEdit,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData) {
+                    return Container();
+                  }
+                  return DropdownButtonHideUnderline(
+                      child: DropdownButton<MoodIcons>(
+                    value: _moodIcons.getMoodIconsList()[
+                      _moodIcons
+                        .getMoodIconsList()
+                        .indexWhere((e) => e.title == snapshot.data)
+                    ],
+                    onChanged: (selected) {
+                      _journalEditBloc.moodEditChanged.add(selected!.title);
+                    },
+                    items: _moodIcons
+                        .getMoodIconsList()
+                        .map(
+                          (e) => DropdownMenuItem(
+                            value: e,
+                            child: Row(
+                              children: <Widget>[
+                                Transform(
+                                  transform: Matrix4.identity()
+                                    ..rotateZ(
+                                        _moodIcons.getMoodRotation(e.title)),
+                                  alignment: Alignment.center,
+                                  child: Icon(_moodIcons.getMoodIcon(e.title),
+                                      color: _moodIcons.getMoodColor(e.title)),
+                                ),
+                                const SizedBox(width: 16.0),
+                                Text(e.title)
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ));
                 },
               ),
-              TextField(
-                controller: _noteController,
-                textInputAction: TextInputAction.newline,
-                focusNode: _noteFocus,
-                textCapitalization: TextCapitalization.sentences,
-                decoration: const InputDecoration(
-                  labelText: 'Note',
-                  icon: Icon(Icons.subject),
-                ),
-                maxLines: null,
+              StreamBuilder(
+                stream: _journalEditBloc.noteEdit,
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (!snapshot.hasData) {
+                    return Container();
+                  }
+                  _noteController.value =
+                      _noteController.value.copyWith(text: snapshot.data);
+
+                  return TextField(
+                    controller: _noteController,
+                    textInputAction: TextInputAction.newline,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: const InputDecoration(
+                      labelText: "Note",
+                      icon: Icon(Icons.subject),
+                    ),
+                    maxLines: null,
+                    onChanged: (n) => _journalEditBloc.noteEditChanged.add(n),
+                  );
+                },
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   TextButton(
                     onPressed: () {
-                      _journalEdit.action = 'Cancel';
-                      Navigator.pop(context, _journalEdit);
+                      Navigator.pop(context);
                     },
-                      style: TextButton.styleFrom(
-                          foregroundColor: Colors.black,
-                          elevation: 2,
-                          backgroundColor: Colors.grey.shade100),
-                    child: const Text('Cancel')
+                    style: TextButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.grey.shade100),
+                    child: const Text("Cancel"),
                   ),
                   const SizedBox(width: 8.0),
                   TextButton(
                     onPressed: () {
-                      _journalEdit.action = 'Save';
-                      String id = widget.add
-                          ? Random().nextInt(9999999).toString()
-                          : _journalEdit.journal.id;
-                      _journalEdit.journal = Journal(
-                        id: id,
-                        date: _selectedDate.toString(),
-                        mood: _moodController.text,
-                        note: _noteController.text,
-                      );
-                      Navigator.pop(context, _journalEdit);
+                      _addOrUpdateJournal();
                     },
                     style: TextButton.styleFrom(
                         foregroundColor: Colors.black,
-                        elevation: 3,
-                        backgroundColor: Colors.lightGreen.shade100),
-                    child: const Text('Save'),
+                        backgroundColor: Colors.grey.shade100,
+                        elevation: 3.0),
+                    child: const Text("Save"),
                   ),
                 ],
-              ),
+              )
             ],
           ),
         ),
@@ -193,11 +237,8 @@ class EditJournalEntryState extends State<EditJournalEntry> {
 
   @override
   void dispose() {
-    _moodController.dispose();
     _noteController.dispose();
-    _moodFocus.dispose();
-    _noteFocus.dispose();
-
+    _journalEditBloc.dispose();
     super.dispose();
   }
 }

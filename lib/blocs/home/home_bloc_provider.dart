@@ -16,11 +16,10 @@ class HomeBlocProvider extends InheritedWidget {
   final String uid;
 
   const HomeBlocProvider(
-      {required Key key,
-      required Widget child,
+      {super.key, required Widget child,
       required this.homeBloc,
       required this.uid})
-      : super(key: key, child: child);
+      : super(child: child);
 
   static HomeBlocProvider of(BuildContext context) {
     return (context.dependOnInheritedWidgetOfExactType(aspect: HomeBlocProvider)
