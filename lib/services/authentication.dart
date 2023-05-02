@@ -1,5 +1,6 @@
 import 'package:counter_app/services/authentication_api.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
@@ -9,7 +10,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 /// Class's document:
 /// A concrete authentication service class that implements the [AuthenticationApi] abstract class
-class AuthenticationService extends AuthenticationApi {
+class AuthenticationService implements AuthenticationApi {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   @override
@@ -20,10 +21,14 @@ class AuthenticationService extends AuthenticationApi {
   @override
   Future<String?> createUserWithEmailAndPassword(
       {required String email, required String password}) async {
-    final User user = (await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password)) as User;
-    notifyListeners();
-    return user.uid;
+    try {
+      final User user = (await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password)) as User;
+      return user.uid;
+    } on FirebaseAuthException catch (e) {
+      debugPrint(e.message);
+      return "";
+    }
   }
 
   @override
@@ -31,19 +36,28 @@ class AuthenticationService extends AuthenticationApi {
     required String email,
     required String password
   }) async {
-    final User user = (
-        await _firebaseAuth.signInWithEmailAndPassword(
-            email: email,
-            password: password
-        )
-    ) as User;
-    notifyListeners();
-    return user.uid;
+    try {
+      final User user = (
+          await _firebaseAuth.signInWithEmailAndPassword(
+              email: email,
+              password: password
+          )
+      ) as User;
+      return user.uid;
+    } on FirebaseAuthException catch (e) {
+      debugPrint(e.message);
+      return "";
+    }
   }
 
   @override
   Future<String?> currentUserUid() async {
-    return _firebaseAuth.currentUser?.uid;
+    final User? user = _firebaseAuth.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      return "";
+    }
   }
 
   @override
@@ -57,8 +71,5 @@ class AuthenticationService extends AuthenticationApi {
   }
 
   @override
-  Future<void> signOut() async {
-    await _firebaseAuth.signOut();
-    notifyListeners();
-  }
+  Future<void> signOut() => _firebaseAuth.signOut();
 }

@@ -2,6 +2,14 @@ import 'package:counter_app/blocs/auth/login_bloc.dart';
 import 'package:counter_app/services/authentication.dart';
 import 'package:flutter/material.dart';
 
+///------------------------------------------------------------------
+/// Topic: Flutter - Dart
+/// Author: Nguyen Truong Thinh
+/// Created At: 28/ 4/ 2023
+///------------------------------------------------------------------
+
+/// Class's document:
+/// The  Login Page
 class Login extends StatefulWidget {
   const Login({super.key});
 

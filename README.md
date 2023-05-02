@@ -1,8 +1,8 @@
 # BLoC Design Patterns in Applications Development with Flutter
 
-<strong> Exploring `BLoC Pattern` to manage `states in Flutter` applications <strong><br>
+<strong> Exploring `BLoC Pattern` to manage `states in Flutter` applications </strong><br>
 Version: 1.0.1<br>
-Author (Learn & Share): <em>Nguyen Truong Thinh<em></em> <br>
+Author (Learn & Share): <em>Nguyen Truong Thinh</em><br> 
 
 ## References :wave:
 <em>A few resources to get you started if this is your first Flutter project:<em>

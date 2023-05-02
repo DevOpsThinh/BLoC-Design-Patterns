@@ -1,10 +1,10 @@
+import 'package:flutter/material.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 28/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'package:flutter/material.dart';
 
 /// Class's document:
 /// Handles tracking the mood icon

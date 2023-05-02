@@ -1,10 +1,10 @@
+import '../models/journal.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 29/ 4/ 2023
 ///------------------------------------------------------------------
-
-import '../models/journal.dart';
 
 /// Class's document:
 ///  Database service abstract class

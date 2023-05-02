@@ -1,11 +1,11 @@
+import 'package:counter_app/blocs/auth/authentication_bloc.dart';
+import 'package:flutter/material.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 30/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'package:counter_app/blocs/auth/authentication_bloc.dart';
-import 'package:flutter/material.dart';
 
 /// Class's document:
 /// Passing the State between widgets & pages.
@@ -15,12 +15,11 @@ class AuthenticationBlocProvider extends InheritedWidget {
   final AuthenticationBloc authenticationBloc;
 
   const AuthenticationBlocProvider(
-      {super.key, required Widget child,
-      required this.authenticationBloc})
-      : super(child: child);
+      {super.key, required this.authenticationBloc, required super.child});
 
   static AuthenticationBlocProvider? of(BuildContext context) {
-    return (context.dependOnInheritedWidgetOfExactType<AuthenticationBlocProvider>());
+    return (context
+        .dependOnInheritedWidgetOfExactType<AuthenticationBlocProvider>());
   }
 
   @override

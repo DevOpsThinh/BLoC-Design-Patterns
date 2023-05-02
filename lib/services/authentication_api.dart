@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
@@ -8,7 +6,7 @@ import 'package:flutter/cupertino.dart';
 
 /// Class's document:
 ///  Authentication service abstract class
-abstract class AuthenticationApi extends ChangeNotifier{
+abstract class AuthenticationApi {
   getFirebaseAuth();
   Future<String?> currentUserUid();
   Future<void> signOut();

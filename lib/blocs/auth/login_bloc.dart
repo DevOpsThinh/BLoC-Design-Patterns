@@ -13,22 +13,21 @@ import 'package:counter_app/services/authentication_api.dart';
 /// Calling the Firebase Authentication service to log in or create a new user.
 class LoginBloc with Validators {
   final AuthenticationApi authenticationApi;
-  String _email = "valid.email@gmail.com";
-  String _password = "production@ready1app";
+  String _email = "ahu@gmail.com";
+  String _password = "12345678";
   bool _isValidEmail = true;
   bool _isValidPassword = true;
 
-  final StreamController<String> _loginOrCreateController = StreamController<
-      String>();
-  final StreamController<
-      String> _loginOrCreateButtonController = StreamController<String>();
-  final StreamController<
-      bool> _enableLoginCreateButtonController = StreamController<
-      bool>.broadcast();
-  final StreamController<String> _emailController = StreamController<
-      String>.broadcast();
-  final StreamController<String> _passwordController = StreamController<
-      String>.broadcast();
+  final StreamController<String> _loginOrCreateController =
+      StreamController<String>();
+  final StreamController<String> _loginOrCreateButtonController =
+      StreamController<String>();
+  final StreamController<bool> _enableLoginCreateButtonController =
+      StreamController<bool>.broadcast();
+  final StreamController<String> _emailController =
+      StreamController<String>.broadcast();
+  final StreamController<String> _passwordController =
+      StreamController<String>.broadcast();
 
   Sink<String> get loginOrCreateChanged => _loginOrCreateController.sink;
 
@@ -63,8 +62,9 @@ class LoginBloc with Validators {
     String result = "";
 
     if (_isValidEmail && _isValidPassword) {
-      await authenticationApi.signInWithEmailAndPassword(
-          email: _email, password: _password).then((user) {
+      await authenticationApi
+          .signInWithEmailAndPassword(email: _email, password: _password)
+          .then((user) {
         result = "Success";
       }).catchError((e) {
         result = e;
@@ -79,15 +79,14 @@ class LoginBloc with Validators {
     String result = "";
 
     if (_isValidEmail && _isValidPassword) {
-      await authenticationApi.createUserWithEmailAndPassword(
-          email: _email,
-          password: _password)
+      await authenticationApi
+          .createUserWithEmailAndPassword(email: _email, password: _password)
           .then((user) {
         result = "New user: $user";
-        authenticationApi.signInWithEmailAndPassword(
-            email: _email,
-            password: _password)
-            .then((user) {}).catchError((e) async {
+        authenticationApi
+            .signInWithEmailAndPassword(email: _email, password: _password)
+            .then((user) {})
+            .catchError((e) async {
           result = e + "! ";
         });
       }).catchError((e) async {
@@ -111,6 +110,10 @@ class LoginBloc with Validators {
     email.listen((e) {
       _email = e;
       _isValidEmail = true;
+      _updateEnableLoginCreateButtonStream();
+    }).onError((error) {
+      _email = "";
+      _isValidEmail = false;
       _updateEnableLoginCreateButtonStream();
     });
 

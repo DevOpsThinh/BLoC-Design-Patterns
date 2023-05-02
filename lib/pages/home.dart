@@ -1,9 +1,3 @@
-///------------------------------------------------------------------
-/// Topic: Flutter - Dart
-/// Author: Nguyen Truong Thinh
-/// Created At: 28/ 4/ 2023
-///------------------------------------------------------------------
-
 import 'package:counter_app/blocs/auth/authentication_bloc.dart';
 import 'package:counter_app/blocs/auth/authentication_bloc_provider.dart';
 import 'package:counter_app/blocs/home/home_bloc.dart';
@@ -16,6 +10,12 @@ import 'package:counter_app/models/journal.dart';
 import 'package:counter_app/services/db_firestore.dart';
 import 'package:flutter/material.dart';
 import 'edit_entry.dart';
+
+///------------------------------------------------------------------
+/// Topic: Flutter - Dart
+/// Author: Nguyen Truong Thinh
+/// Created At: 28/ 4/ 2023
+///------------------------------------------------------------------
 
 /// Class's document:
 /// The Journal Home Page

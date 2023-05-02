@@ -1,13 +1,13 @@
+import 'dart:async';
+import 'package:counter_app/models/journal.dart';
+import 'package:counter_app/services/authentication_api.dart';
+import 'package:counter_app/services/db_firestore_api.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 30/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'dart:async';
-import 'package:counter_app/models/journal.dart';
-import 'package:counter_app/services/authentication_api.dart';
-import 'package:counter_app/services/db_firestore_api.dart';
 
 /// Class's document:
 /// Retrieving the list of journals and delete individual entries.
@@ -32,7 +32,7 @@ class HomeBloc {
 
   void _startListeners() {
     // Retrieve Firebase Firestore Journal Records as List<Journal> not DocumentSnapshot
-    authenticationApi.getFirebaseAuth().currentUser().then((user) {
+    authenticationApi.getFirebaseAuth().currentUser.then((user) {
       databaseApi.getJournalList(user.uid).listen((journalDocs) {
         _addListJournal.add(journalDocs);
       });

@@ -40,14 +40,14 @@ class MyApp extends StatelessWidget {
     return AuthenticationBlocProvider(
       authenticationBloc: authBloc,
       child: StreamBuilder(
-        initialData: authBloc.listLogoutUser,
+        initialData: null,
         stream: authBloc.user,
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Container(
               color: Colors.lightGreen,
               child:  const CircularProgressIndicator(strokeWidth: 5.0));
-          } else if (!snapshot.hasData) {
+          } else if (snapshot.hasData) {
             return HomeBlocProvider(
                 homeBloc: HomeBloc(DbFirestoreService(), authService),
                 uid: snapshot.data,

@@ -1,15 +1,15 @@
-///------------------------------------------------------------------
-/// Topic: Flutter - Dart
-/// Author: Nguyen Truong Thinh
-/// Created At: 28/ 4/ 2023
-///------------------------------------------------------------------
-
 import 'package:counter_app/blocs/journal/journal_edit_bloc_provider.dart';
 import 'package:counter_app/blocs/journal/journal_entry_bloc.dart';
 import 'package:counter_app/classes/utilities/FormatDates.dart';
 import 'package:counter_app/classes/utilities/mood_icons.dart';
 
 import 'package:flutter/material.dart';
+
+///------------------------------------------------------------------
+/// Topic: Flutter - Dart
+/// Author: Nguyen Truong Thinh
+/// Created At: 28/ 4/ 2023
+///------------------------------------------------------------------
 
 /// Class's document:
 /// The Journal Entry Page

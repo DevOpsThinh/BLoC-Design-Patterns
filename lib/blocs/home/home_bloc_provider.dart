@@ -1,11 +1,11 @@
+import 'package:flutter/material.dart';
+import 'home_bloc.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 30/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'package:flutter/material.dart';
-import 'home_bloc.dart';
 
 /// Class's document:
 /// Passing the State between widgets & pages
@@ -16,10 +16,10 @@ class HomeBlocProvider extends InheritedWidget {
   final String uid;
 
   const HomeBlocProvider(
-      {super.key, required Widget child,
+      {super.key,
       required this.homeBloc,
-      required this.uid})
-      : super(child: child);
+      required this.uid,
+      required super.child});
 
   static HomeBlocProvider? of(BuildContext context) {
     return (context.dependOnInheritedWidgetOfExactType<HomeBlocProvider>());

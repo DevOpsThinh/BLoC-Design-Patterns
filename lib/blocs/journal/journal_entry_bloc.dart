@@ -1,13 +1,13 @@
+import 'dart:async';
+
+import 'package:counter_app/models/journal.dart';
+import 'package:counter_app/services/db_firestore_api.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 30/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'dart:async';
-
-import 'package:counter_app/models/journal.dart';
-import 'package:counter_app/services/db_firestore_api.dart';
 
 /// Class's document:
 /// Monitoring the journal edit page to add a new entry or save an existing entry.

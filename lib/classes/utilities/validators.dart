@@ -1,10 +1,10 @@
+import 'dart:async';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 30/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'dart:async';
 
 /// Class's document:
 /// Handles validating the email & password will be provided by the user.

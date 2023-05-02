@@ -24,14 +24,11 @@ class AuthenticationBloc {
   Stream<bool> get listLogoutUser => _logoutController.stream;
 
   AuthenticationBloc(this.authenticationApi) {
-    onAuthChanged();
+    authStateChanges();
   }
 
-  void onAuthChanged() {
-    authenticationApi
-        .getFirebaseAuth()
-        .authStateChanges()
-        .listen((user) {
+  void authStateChanges() {
+    authenticationApi.getFirebaseAuth().authStateChanges().listen((user) {
       final String uid = user?.uid;
       addUser.add(uid);
     });

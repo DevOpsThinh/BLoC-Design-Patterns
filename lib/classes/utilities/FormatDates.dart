@@ -1,10 +1,10 @@
+import 'package:intl/intl.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 29/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'package:intl/intl.dart';
 
 /// Class's document:
 /// Handles formatting dates

@@ -1,13 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../models/journal.dart';
+import 'db_firestore_api.dart';
+
 ///------------------------------------------------------------------
 /// Topic: Flutter - Dart
 /// Author: Nguyen Truong Thinh
 /// Created At: 29/ 4/ 2023
 ///------------------------------------------------------------------
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../models/journal.dart';
-import 'db_firestore_api.dart';
 
 /// Class's document:
 /// A concrete firebase firestore database service class that implements the [DatabaseApi] abstract class
